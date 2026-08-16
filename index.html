@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>TransparenciaCyL · Contratación y subvenciones de Castilla y León</title>
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<div class="loading" id="loading"><div class="spinner"></div><div>Cargando datos…</div></div>
+
+<header>
+  <div class="wrap">
+    <h1>TransparenciaCyL</h1>
+    <p>Contratación pública y subvenciones de la Junta de Castilla y León, con datos abiertos del portal de Datos Abiertos. Incluye altos cargos y un buscador en vivo de adjudicatarios y beneficiarios.</p>
+    <div class="fuentes">Fuente: Portal de Datos Abiertos de la Junta de Castilla y León · API de análisis de datos abiertos (CC BY 4.0)</div>
+  </div>
+</header>
+
+<nav class="tabs wrap" id="tabs">
+  <button class="tab active" data-tab="resumen">Resumen</button>
+  <button class="tab" data-tab="contratos">Contratos</button>
+  <button class="tab" data-tab="subvenciones">Subvenciones</button>
+  <button class="tab" data-tab="decisiones">Detalle</button>
+  <button class="tab" data-tab="altos">Altos cargos</button>
+  <button class="tab" data-tab="buscador">Buscar</button>
+</nav>
+
+<main class="wrap">
+
+  <section id="tab-resumen" class="tab-panel active">
+    <div class="kpis" id="kpis"></div>
+    <div class="card">
+      <h2>Conclusiones · números clave</h2>
+      <div class="concl" id="concl-res"></div>
+    </div>
+    <div class="grid">
+      <div class="card"><h2>Importe adjudicado en contratos por año</h2><div class="chart mid" id="ch-ca-anio"></div><div class="note">2018 solo 2 registros (anecdótico); el agregado cubre 2019 → 2026.</div></div>
+      <div class="card"><h2>Concesiones de subvenciones por año</h2><div class="chart mid" id="ch-sa-anio"></div><div class="note">Cobertura del registro publicado: 2018 → 2022 (2022 parcial, acaba el 2022-03-31).</div></div>
+    </div>
+  </section>
+
+  <section id="tab-contratos" class="tab-panel">
+    <div class="grid">
+      <div class="card"><h2>Importe por procedimiento de contratación</h2><div class="chart" id="ch-c-proc"></div></div>
+      <div class="card"><h2>Importe por tipo de contrato</h2><div class="chart" id="ch-c-tipo"></div></div>
+    </div>
+    <div class="card"><h2>Top 10 órganos de contratación por importe</h2><div class="chart" id="ch-c-organo"></div></div>
+    <div class="card"><h2>Adjudicación por habitante en cada provincia</h2><div class="chart" id="ch-c-prov"></div><div class="note">Importe total de contratos territorializados (órganos provinciales y consejerías) ÷ población del padrón por provincia. No incluye lo no territorializado, concentrado en consejerías y órganos centrales.</div></div>
+    <div class="card"><h2>Evolución del importe adjudicado (contratos)</h2><div class="chart" id="ch-c-anio-2"></div></div>
+  </section>
+
+  <section id="tab-subvenciones" class="tab-panel">
+    <div class="grid">
+      <div class="card"><h2>Importe por instrumento de ayuda</h2><div class="chart" id="ch-s-instr"></div></div>
+      <div class="card"><h2>Top 10 órganos convocantes</h2><div class="chart" id="ch-s-organo"></div></div>
+    </div>
+    <div class="card"><h2>Top 15 beneficiarios por importe recibido</h2><div class="chart" id="ch-s-benef"></div></div>
+  </section>
+
+  <section id="tab-decisiones" class="tab-panel">
+    <div class="kpis" id="kpis-dec"></div>
+    <div class="note">Para priorizar la fiscalización y la transparencia. Tablas ordenables (clic en las cabeceras) y descargables en CSV para analizarlas fuera de esta web.</div>
+    <div class="card">
+      <div class="card-head">
+        <h2>Órganos de contratación · importe, número e importe medio</h2>
+        <button class="primary" id="csv-org">Descargar CSV</button>
+      </div>
+      <div class="data-scroll">
+      <table class="data sortable" id="t-org">
+        <thead><tr>
+          <th data-k="organo">Órgano</th>
+          <th data-k="importe" class="num">Importe</th>
+          <th data-k="n" class="num">Nº contratos</th>
+          <th data-k="medio" class="num">Importe medio</th>
+          <th data-k="pct" class="num">% del total</th>
+        </tr></thead>
+        <tbody id="t-org-body"></tbody>
+      </table>
+    </div>
+    </div>
+    <div class="card">
+      <div class="card-head">
+        <h2>Beneficiarios de subvenciones · importe y número</h2>
+        <button class="primary" id="csv-ben">Descargar CSV</button>
+      </div>
+      <div class="data-scroll">
+      <table class="data sortable" id="t-ben">
+        <thead><tr>
+          <th data-k="nombre">Beneficiario</th>
+          <th data-k="importe" class="num">Importe</th>
+          <th data-k="n" class="num">Nº subvenciones</th>
+          <th data-k="pct" class="num">% del total</th>
+        </tr></thead>
+        <tbody id="t-ben-body"></tbody>
+      </table>
+      </div>
+    </div>
+  </section>
+
+  <section id="tab-altos" class="tab-panel">
+    <div class="card">
+      <div id="altos-lista">
+        <div class="toolbar">
+          <input type="search" id="busq-altos" placeholder="Buscar por nombre o cargo…">
+          <button class="primary" id="btn-altos-clear">Limpiar</button>
+          <span class="note" style="margin:auto 0 0 auto">Mostrando solo cargos con nombramiento (fecha de posesión). La fuente no publica retribuciones ni funciones; se muestran formación, experiencia y enlace oficial.</span>
+        </div>
+        <div class="data-scroll">
+          <table class="data sortable" id="tabla-altos"></table>
+        </div>
+      </div>
+      <div id="altos-ficha" style="display:none"></div>
+    </div>
+  </section>
+
+  <section id="tab-buscador" class="tab-panel">
+    <div class="card">
+      <h2>Buscador de contratos y subvenciones</h2>
+      <div class="toolbar">
+        <select id="bb-base">
+          <option value="contratos-menores">Contratos menores</option>
+          <option value="contratos-ordinarios">Contratos ordinarios</option>
+          <option value="subvenciones-concedidas">Subvenciones concedidas</option>
+        </select>
+        <select id="bb-tipo"><option value="">Tipo / instrumento (todos)</option></select>
+        <select id="bb-organo"><option value="">Órgano (todos)</option></select>
+        <input type="search" id="bb-q" placeholder="Adjudicatario, beneficiario, órgano, CIF…">
+        <button class="primary" id="bb-btn">Buscar</button>
+      </div>
+      <div class="note">Consulta en vivo la API de Datos Abiertos. Busca por nombre de empresa, CIF/NIF o texto del expediente y filtra por tipo e instrumento y por órgano. Clic en las cabeceras de la tabla para ordenar (▲ asc, ▼ desc). Pasa el cursor sobre un título largo para verlo entero.</div>
+      <div class="toolbar" id="bb-meta" style="justify-content:space-between;align-items:center">
+        <span class="bb-resumo" id="bb-resumo"></span>
+        <span class="bb-pager">
+          <button class="primary" id="bb-prev">← Anterior</button>
+          <span id="bb-page"></span>
+          <button class="primary" id="bb-next">Siguiente →</button>
+        </span>
+      </div>
+      <div class="data-scroll">
+        <table class="data" id="bb-result"></table>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<footer>
+  <div class="wrap">
+    <p>Proyecto para el Concurso de Datos Abiertos de Castilla y León · Reutilización de los datos abiertos de la Junta de Castilla y León.</p>
+  </div>
+</footer>
+
+<script src="lib/echarts.min.js"></script>
+<script src="js/main.js"></script>
+</body>
+</html>
