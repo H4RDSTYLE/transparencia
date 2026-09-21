@@ -234,12 +234,14 @@ function initContratos(D) {
     }],
   });
 
+  const tipoRev = D.c_por_tipo_contrato.map((x) => x.importe).reverse();
+  const tipoMax = Math.max(...tipoRev);
   mk("ch-c-tipo", {
     tooltip: { trigger: "axis", axisPointer: { type: "shadow" }, valueFormatter: (v) => fmtE2(v) },
-    grid: { left: 120, right: 30, top: 12, bottom: 24, containLabel: true },
-    xAxis: { type: "value", axisLabel: { formatter: (v) => fmtM(v) } },
-    yAxis: { type: "category", data: D.c_por_tipo_contrato.map((x) => x.tipo).reverse(), axisLabel: { width: 120, overflow: "truncate" } },
-    series: [{ type: "bar", data: D.c_por_tipo_contrato.map((x) => x.importe).reverse(), itemStyle: { color: "#0b5394" }, label: { show: true, position: "right", formatter: (p) => fmtM(p.value) } }],
+    grid: { left: 140, right: 80, top: 12, bottom: 24, containLabel: true },
+    xAxis: { type: "value", min: 0, max: tipoMax ? Math.round(tipoMax * 1.18) : null, axisLabel: { formatter: (v) => fmtM(v), hideOverlap: true } },
+    yAxis: { type: "category", data: D.c_por_tipo_contrato.map((x) => x.tipo).reverse(), axisLabel: { width: 130, overflow: "truncate" } },
+    series: [{ type: "bar", data: tipoRev, itemStyle: { color: "#0b5394" }, label: { show: true, position: "right", formatter: (p) => fmtM(p.value) } }],
   });
 
   const org10 = D.c_por_organo.slice(0, 10).reverse();
@@ -277,7 +279,7 @@ function initContratos(D) {
   mk("ch-c-prov", {
     tooltip: { trigger: "axis", axisPointer: { type: "shadow" }, valueFormatter: (v) => fmtE2(v) },
     grid: { left: 90, right: 160, top: 12, bottom: 24, containLabel: true },
-    xAxis: { type: "value", axisLabel: { formatter: (v) => fmtE(v) } },
+    xAxis: { type: "value", axisLabel: { formatter: (v) => fmtE(v), hideOverlap: true } },
     yAxis: { type: "category", data: habData.map((x) => x.provincia).reverse(), axisLabel: { fontSize: 11 } },
     series: [{ type: "bar", data: habData.map((x) => x.hab).reverse(), itemStyle: { color: "#0b5394" }, barMaxWidth: 22, label: { show: true, position: "right", formatter: (p) => fmtE(p.value), fontSize: 9 } }],
   });
@@ -309,7 +311,7 @@ function initSubvenciones(D) {
   mk("ch-s-benef", {
     tooltip: { trigger: "axis", axisPointer: { type: "shadow" }, valueFormatter: (v) => fmtE2(v) },
     grid: { left: 60, right: 160, top: 12, bottom: 24, containLabel: true },
-    xAxis: { type: "value", axisLabel: { formatter: (v) => fmtM(v) } },
+    xAxis: { type: "value", axisLabel: { formatter: (v) => fmtM(v), hideOverlap: true } },
     yAxis: { type: "category", data: ben15.map(nombreBen).reverse(), axisLabel: { fontSize: 9, width: 130, overflow: "truncate" } },
     series: [{ type: "bar", data: ben15.map((x) => x.importe).reverse(), itemStyle: { color: "#2e7d32" }, label: { show: true, position: "right", formatter: (p) => fmtM(p.value), fontSize: 9 } }],
   });
